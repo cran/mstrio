@@ -1,4 +1,4 @@
-# projects.R
+# api-projects.R
 #' @import httr
 
 # get a list of projects which the authenticated user has access to.

@@ -1,4 +1,4 @@
-# formjson.R
+# utils-formjson.R
 # Utility for forming the JSON objects that are required to create and edit MicroStrategy datasets
 
 form_json <- function(df, table_name, to_metric=NULL, to_attribute=NULL){

@@ -5,14 +5,14 @@ library(mstrio)
 username <- "demouser"
 password <- "demopass"
 
-## ------------------------------------------------------------------------
-library(mstrio)
-
-conn <- connect_mstr(base_url = 'https://demo.microstrategy.com/MicroStrategyLibrary/api', 
-                     username = username, 
-                     password = password, 
-                     project_name = 'MobileDossier',
-                     login_mode = 8)
+## ---- eval=FALSE---------------------------------------------------------
+#  library(mstrio)
+#  
+#  conn <- connect_mstr(base_url = 'https://demo.microstrategy.com/MicroStrategyLibrary/api',
+#                       username = username,
+#                       password = password,
+#                       project_name = 'MobileDossier',
+#                       login_mode = 8)
 
 ## ---- eval=FALSE---------------------------------------------------------
 #  cube_data <- get_cube(connection = conn, cube_id = '5E2501A411E8756818A50080EF4524C9')
@@ -64,6 +64,6 @@ conn <- connect_mstr(base_url = 'https://demo.microstrategy.com/MicroStrategyLib
 #                            to_metric = c("integer_metric"),
 #                            to_attribute = c("integer_attribute"))
 
-## ------------------------------------------------------------------------
-close(connection = conn)
+## ---- eval=FALSE---------------------------------------------------------
+#  close(connection = conn)
 

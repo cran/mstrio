@@ -1,4 +1,4 @@
-# authentication.R
+# api-authentication.R
 #' @import httr
 
 # Create a session with the MicroStrategy REST API server
@@ -6,7 +6,8 @@ login <- function(connection, verbose=FALSE){
   response <- httr::POST(url=paste0(connection@base_url, "/auth/login"),
                          body=list("username"=connection@username,
                                    "password"=connection@password,
-                                   "loginMode"=connection@login_mode),
+                                   "loginMode"=connection@login_mode,
+                                   "applicationType"=connection@application_code),
                          encode="json")
   if(verbose){
     print(response$url)
@@ -19,6 +20,7 @@ login <- function(connection, verbose=FALSE){
 logout <- function(connection, verbose=FALSE){
   response <- httr::POST(url=paste0(connection@base_url, "/auth/logout"),
                          add_headers("X-MSTR-AuthToken"=connection@auth_token),
+                         set_cookies(connection@cookies),
                          encode="json")
   if(verbose){
     print(response$url)
