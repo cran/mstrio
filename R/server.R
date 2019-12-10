@@ -29,6 +29,7 @@ server <- function(input, output, session) {
   })
 
   shiny::observeEvent(input$onExportGatherDetails,{
+    cloneDataframe(input$dataframeToGather)
     sendDataframesFullDetailsToGui(input$dataframeToGather);
   })
 
