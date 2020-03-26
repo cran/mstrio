@@ -1,4 +1,7 @@
 
+## mstrio 11.2.1
+
+
 ## mstrio 11.2.0
 * optimized downloading speed of filtered Reports
 * improved performance when downloading unfiltered Cubes/Reports

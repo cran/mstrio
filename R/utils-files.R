@@ -29,7 +29,7 @@ createMstrconnectorDirectory <- function() {
   },
   error = function(e){
     print(e$message)
-    displayErrorMessage('RfolderError')
+    displayErrorMessage('RfolderError', e$message)
   })
 }
 
@@ -70,13 +70,6 @@ updateRecentProjects <- function(recentProjects) {
   saveStringToFile(path,recentProjects)
 }
 
-updateDatasetProperties <- function(properties) {
-  fileName = 'datasetProperties.txt'
-  path <- file.path(baseFolderPath(),fileName)
-  unlink(path)
-  saveStringToFile(path,properties)
-}
-
 saveStringToFile <- function(path, string) {
     tryCatch({
       vector <- c(string)
@@ -86,6 +79,6 @@ saveStringToFile <- function(path, string) {
   },
   error = function(e) {
     print(e$message)
-    displayErrorMessage('RfileError')
+    displayErrorMessage('RfileError', e$message)
   })
 }

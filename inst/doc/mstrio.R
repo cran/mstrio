@@ -1,11 +1,11 @@
-## ---- include=FALSE------------------------------------------------------
+## ---- include=FALSE-----------------------------------------------------------
 library(mstrio)
 
-## ---- include=FALSE------------------------------------------------------
+## ---- include=FALSE-----------------------------------------------------------
 username <- "demouser"
 password <- "demopass"
 
-## ---- eval=FALSE---------------------------------------------------------
+## ---- eval=FALSE--------------------------------------------------------------
 #  library(mstrio)
 #  
 #  conn <- connect_mstr(base_url = 'https://demo.microstrategy.com/MicroStrategyLibrary/api',
@@ -14,13 +14,13 @@ password <- "demopass"
 #                       project_name = 'MobileDossier',
 #                       login_mode = 8)
 
-## ---- eval=FALSE---------------------------------------------------------
+## ---- eval=FALSE--------------------------------------------------------------
 #  cube_data <- get_cube(connection = conn, cube_id = '5E2501A411E8756818A50080EF4524C9')
 
-## ---- eval=FALSE---------------------------------------------------------
+## ---- eval=FALSE--------------------------------------------------------------
 #  report_data <- get_report(connection = conn, report_id = '873CD58E11E8772BA1CD0080EF05B984')
 
-## ---- eval=FALSE---------------------------------------------------------
+## ---- eval=FALSE--------------------------------------------------------------
 #  dat <- iris[1:50, ]
 #  
 #  # note: column names in MicroStrategy cannot have a period (".")
@@ -32,7 +32,7 @@ password <- "demopass"
 #                            dataset_name = "IRIS_Upload",
 #                            table_name = "IRIS_Upload")
 
-## ---- eval=FALSE---------------------------------------------------------
+## ---- eval=FALSE--------------------------------------------------------------
 #  dat <- iris[51:150, ]
 #  
 #  # note: column names in MicroStrategy cannot have a period (".")
@@ -45,7 +45,7 @@ password <- "demopass"
 #                 table_name = newcube$name,
 #                 update_policy = 'add')
 
-## ---- eval=FALSE---------------------------------------------------------
+## ---- eval=FALSE--------------------------------------------------------------
 #  dat <- iris
 #  
 #  # note: column names in MicroStrategy cannot have a period (".")
@@ -64,6 +64,6 @@ password <- "demopass"
 #                            to_metric = c("integer_metric"),
 #                            to_attribute = c("integer_attribute"))
 
-## ---- eval=FALSE---------------------------------------------------------
+## ---- eval=FALSE--------------------------------------------------------------
 #  close(connection = conn)
 
