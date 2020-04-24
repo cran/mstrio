@@ -127,7 +127,7 @@ connect_mstr <- function(base_url, username, password, project_name = NULL, proj
   else {
     stop(sprintf("This version of mstrio is only supported on MicroStrategy %s or higher.
     Current Intelligence Server version: %s
-    Current MicroStrategy Web version: %s", con@VRCH, con@web_version, con@iserver_version), call. = FALSE)
+    Current MicroStrategy Web version: %s", con@VRCH, con@iserver_version, con@web_version), call. = FALSE)
   } # nocov end
 }
 
