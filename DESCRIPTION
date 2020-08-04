@@ -1,7 +1,7 @@
 Package: mstrio
 Type: Package
 Title: Interface for 'MicroStrategy' REST API
-Version: 11.2.2
+Version: 11.2.2.1
 Maintainer: Piotr Kowal <pkowal@microstrategy.com>
 Authors@R: c(
     person("Piotr", "Kowal", email = "pkowal@microstrategy.com", role = c("cre")),
@@ -32,7 +32,7 @@ Collate: 'api-authentication.R' 'api-cubes.R' 'api-datasets.R'
         'utils-filter.R' 'utils-files.R' 'utils-gui.R' 'utils-import.R'
         'utils-helpers.R' 'utils-export.R' 'server.R' 'app.R'
 NeedsCompilation: no
-Packaged: 2020-06-22 13:32:58 UTC; jenkins
+Packaged: 2020-07-30 14:36:05 UTC; jenkins
 Author: Piotr Kowal [cre],
   Scott Rigney [aut],
   Zofia Rogala [ctb],
@@ -44,4 +44,4 @@ Author: Piotr Kowal [cre],
   Adam Piotrowski [ctb],
   Wojciech Antonczyk [ctb]
 Repository: CRAN
-Date/Publication: 2020-06-23 09:00:02 UTC
+Date/Publication: 2020-08-04 12:30:10 UTC
