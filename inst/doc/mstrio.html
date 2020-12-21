@@ -215,71 +215,82 @@ hr {
 <h2>Connecting to the REST API server</h2>
 
 <p>To create a connection to the MicroStrategy Intelligence Server, you&#39;ll need to obtain the address of the REST API
-server, typically following this format: <code>https://yourMicroStrategyEnvironment.com/MicroStrategyLibrary/api</code>. </p>
+server, typically following this format: <code>https://yourMicroStrategyEnvironment.com/MicroStrategyLibrary/api</code>.</p>
 
-<p>To validate that the REST API server is running, in your web browser, visit <code>https://yourMicroStrategyEnvironment.com/MicroStrategyLibrary/api-docs</code>. </p>
+<p>To validate that the REST API server is running, in your web browser, visit <code>https://yourMicroStrategyEnvironment.com/MicroStrategyLibrary/api-docs</code>.</p>
 
 <p>The <code>Connection$new()</code> function requires the URL to the REST API server, your username and password, and the name of the project which contains the data you are looking for. By default, the <code>Connection$new()</code> function expects your MicroStrategy username and password. If you use LDAP to access MicroStrategy, provide the optional argument <code>login_mode=16</code> to the <code>Connection$new()</code> function. <code>Connection$new()</code> returns a list of environment connection data which is in turn used in subsequent requests to the API server.</p>
 
 <pre><code class="r">library(mstrio)
 
-conn &lt;- Connection$new(base_url = &#39;https://demo.microstrategy.com/MicroStrategyLibrary/api&#39;, 
-                     username = username, 
-                     password = password, 
-                     project_name = &#39;MobileDossier&#39;,
-                     login_mode = 8)
+conn &lt;- Connection$new(base_url = &#39;https://demo.microstrategy.com/MicroStrategyLibrary/api&#39;,
+                       username = username,
+                       password = password,
+                       project_name = &#39;MobileDossier&#39;,
+                       login_mode = 8)
 </code></pre>
 
 <h2>Extracting data from an existing cube</h2>
 
-<p>Now that we&#39;ve logged in, let&#39;s get some data! We can do this with the <code>get_cube()</code> function. Provide your connection object and the identifier of the cube containing the data. You can get the ID by navigating to the cube within MicroStrategy Web, right-clicking on the cube of interest, and selecting &#39;properties.&#39; Alternatively, you can use MicroStrategy Developer in a similar manner. <code>get_cube()</code> will return a R dataframe with the cube data.</p>
+<p>Now that we&#39;ve logged in, let&#39;s get some data! We can do this with the <code>Cube$to_dataframe()</code> function. Provide your connection object and the identifier of the cube containing the data. You can get the ID by navigating to the cube within MicroStrategy Web, right-clicking on the cube of interest, and selecting &#39;properties.&#39; Alternatively, you can use MicroStrategy Developer in a similar manner. <code>Cube$to_dataframe()</code> will return a R dataframe with the cube data.</p>
 
-<pre><code class="r">cube_data &lt;- get_cube(connection = conn, cube_id = &#39;5E2501A411E8756818A50080EF4524C9&#39;)
+<pre><code class="r">cube &lt;- Cube$new(connection = conn, cube_id = &#39;5E2501A411E8756818A50080EF4524C9&#39;)
+cube$to_dataframe()
+cube_data &lt;- cube$dataframe
 </code></pre>
 
 <h2>Extracting data from an existing report</h2>
 
-<p>If the data we need is contained in a report, we can extract it using <code>get_report()</code>. Like <code>get_cube()</code>, this will return a dataframe containing the data from all rows.</p>
+<p>If the data we need is contained in a report, we can extract it using <code>Report$to_dataframe()</code> function. Like <code>Cube$to_dataframe()</code>, this will return a dataframe containing the data from all rows.</p>
 
-<pre><code class="r">report_data &lt;- get_report(connection = conn, report_id = &#39;873CD58E11E8772BA1CD0080EF05B984&#39;)
+<pre><code class="r">report &lt;- Report$new(connection = conn, report_id = &#39;873CD58E11E8772BA1CD0080EF05B984&#39;)
+report$to_dataframe()
+report_data &lt;- report$dataframe
 </code></pre>
 
 <h2>Creating a new cube</h2>
 
-<p>You can create a new in-memory cube from a dataframe in R. This is accomplished with the <code>create_dataset()</code> function. You&#39;ll need to specify a name for your cube and a name for the table that will contain the data. At this time, only one table per cube is supported. <code>create_dataset()</code> will return the datasetID and tableIDs, in case you want to save these for later use.</p>
+<p>You can create a new in-memory cube from a dataframe in R. This is accomplished with the <code>Dataset</code> class. You&#39;ll need to specify a name for your dataset and a name for the table that will contain the data. You can add tables by calling <code>add_table()</code> multiple times. Among others, the <code>Dataset</code> object will hold the <code>dataset_id</code> and <code>folder_id</code>.</p>
 
 <pre><code class="r">dat &lt;- iris[1:50, ]
 
 # note: column names in MicroStrategy cannot have a period (&quot;.&quot;)
 names(dat) &lt;- gsub(&quot;[[:punct:]]&quot;, &quot;_&quot;, names(dat))
 
-# this creates the dataset, and returns the dataset ID and table ID which you&#39;ll use to update the dataset later
-newcube &lt;- create_dataset(connection = conn,
-                          data_frame = dat, 
-                          dataset_name = &quot;IRIS_Upload&quot;, 
-                          table_name = &quot;IRIS_Upload&quot;)
+# this creates the dataset, and returns the dataset object, which you can use to update the dataset later
+my_dataset &lt;- Dataset$new(connection=conn, name=&quot;IRIS_Upload&quot;)
+
+# add one or more tables to the dataset
+my_dataset$add_table(name = &quot;IRIS_Upload&quot;,
+                     data_frame = dat,
+                     update_policy = &quot;add&quot;)
+my_dataset$create()
 </code></pre>
 
 <h2>Adding or modifying data in a cube</h2>
 
-<p>You can also modify data within a cube. This is helpful if the data changes from day to day and you wish to add new data to a pre-existing cube for analysis in MicroStrategy. To accomplish this, use the <code>update_dataset()</code> function. Note that you&#39;ll need to pass in both the datasetID and tableID for the target cube and target table within the cube, respectively. These parameters are returned by the <code>create_dataset()</code> function. The <code>updatePolicy</code> parameter controls the update behavior. Currently supported update operations are <code>add</code>, <code>update</code>, <code>upsert</code>, and <code>replace</code>.</p>
+<p>You can also modify data within a dataset. This is helpful if the data changes from day to day and you wish to add new data to a pre-existing dataset for analysis in MicroStrategy. To accomplish this, use the <code>Dataset$update()</code> function. Note that you&#39;ll need to first instantiate a <code>Dataset</code> object using the the <code>dataset_id</code> of the target dataset. The <code>update_policy</code> parameter controls the update behavior. Currently supported update operations are <code>add</code>, <code>update</code>, <code>upsert</code>, and <code>replace</code>.</p>
 
 <pre><code class="r">dat &lt;- iris[51:150, ]
 
 # note: column names in MicroStrategy cannot have a period (&quot;.&quot;)
 names(dat) &lt;- gsub(&quot;[[:punct:]]&quot;, &quot;_&quot;, names(dat))
 
-# this adds new data to the previously created dataset
-update_dataset(connection = conn,
-               data_frame = dat,
-               dataset_id = newcube$datasetID,
-               table_name = newcube$name,
-               update_policy = &#39;add&#39;)
+# Initialise the existing dataset using the `id` param.
+my_dataset &lt;- Dataset$new(connection = conn, id = my_dataset$dataset_id)
+
+# update one or more tables to the dataset
+my_dataset$add_table(name = &quot;IRIS_Upload&quot;,
+                     data_frame = dat,
+                     update_policy = &quot;add&quot;)
+
+# push the new data to the MicroStrategy Environment
+my_dataset$update(auto_publish=TRUE)
 </code></pre>
 
 <h2>Mapping R data types to MicroStrategy metrics and attributes</h2>
 
-<p>When creating a cube from a R dataframe, numeric columns (e.g. double, numeric, integer) are treated as <em>metrics</em> and non-numeric columns (e.g. strings, factors, date and time stamps) are treated as <em>attributes</em>. To override this default and specify columns to create specifically as an attribute or metric, an example being an integer that&#39;s used as an attribute to join or link two data sets, you can provide a vector of metrics and attributes in the <code>to_attribue</code> and <code>to_metric</code> parameters.</p>
+<p>When creating a dataset from a R dataframe, numeric columns (e.g. double, numeric, integer) are treated as <em>metrics</em> and non-numeric columns (e.g. strings, factors, date and time stamps) are treated as <em>attributes</em>. To override this default and specify columns to create specifically as an attribute or metric, an example being an integer that&#39;s used as an attribute to join or link two data sets, you can provide a vector of metrics and attributes in the <code>to_attribue</code> and <code>to_metric</code> parameters.</p>
 
 <pre><code class="r">dat &lt;- iris
 
@@ -290,21 +301,22 @@ names(dat) &lt;- gsub(&quot;[[:punct:]]&quot;, &quot;_&quot;, names(dat))
 dat$integer_attribute &lt;- as.integer(row.names(dat))
 dat$integer_metric &lt;- row.names(dat)
 
-# create a new cube, but this time, specifically instructs MicroStrategy to reflect these two new columns as a metric and attribute, respectively
+# create a new dataset, but this time, specifically instructs MicroStrategy to reflect these two new columns as a metric and attribute, respectively
 # you can map multiple columns at once with to_metric = c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;)
-newcube &lt;- create_dataset(connection = conn, 
-                          data_frame = dat, 
-                          dataset_name = &quot;IRIS&quot;, 
-                          table_name = &quot;IRIS_Upload&quot;,
-                          to_metric = c(&quot;integer_metric&quot;),
-                          to_attribute = c(&quot;integer_attribute&quot;))
+new_dataset &lt;- Dataset$new(connection=conn, name=&quot;IRIS&quot;)
+my_dataset$add_table(name = &quot;IRIS_Upload&quot;,
+                     data_frame = dat,
+                     update_policy = &quot;add&quot;,
+                     to_metric = c(&quot;integer_metric&quot;),
+                     to_attribute = c(&quot;integer_attribute&quot;))
+my_dataset$create()
 </code></pre>
 
 <h2>Ending the session</h2>
 
 <p>Finally, terminate session with the server using the <code>close()</code> function.</p>
 
-<pre><code class="r">close(connection = conn)
+<pre><code class="r">conn$close()
 </code></pre>
 
 </body>
